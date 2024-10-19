@@ -1,0 +1,101 @@
+<html>
+
+<head>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+
+<body>
+
+
+
+<div style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+
+    <h3>Donation</h3>
+    <div class="input-group mb-3" style="width: 70%;">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-amount">€</span>
+        </div>
+        <input type="number" class="form-control" placeholder="Amount" aria-label="Amount" id="amount">
+    </div>
+
+    <div class="input-group mb-3" style="width: 70%;">
+
+        <input type="text" class="form-control" placeholder="Name" aria-label="Name" id="name">
+    </div>
+
+    <div class="input-group mb-3" style="width: 70%;">
+
+        <input type="text" class="form-control" placeholder="Address" aria-label="Address" id="address">
+    </div>
+
+    <div class="input-group mb-3" style="width: 70%;">
+
+        <input type="text" class="form-control" placeholder="Zip Code" aria-label="ZipCode" id="zip">
+    </div>
+
+    <div class="input-group mb-3" style="width: 70%;">
+
+        <input type="text" class="form-control" placeholder="City" aria-label="City" id="city">
+    </div>
+
+    <div class="input-group mb-3" style="width: 70%;">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">@</span>
+        </div>
+        <input type="text" class="form-control" placeholder="Email" aria-label="Email" id="email">
+    </div>
+
+    <div class="input-group mb-3" style="width: 70%;">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-number">+ 351</span>
+        </div>
+        <input type="text" class="form-control" placeholder="Phone Number" aria-label="PhoneNumber" id="phone">
+    </div>
+
+    <button class="btn btn-primary" id="subscribe">Donate</button>
+</div>
+
+
+<script sandbox="allow-same-origin">
+
+    const stripe = Stripe("pk_test_51QBd4CErEWDaj8pC55eae7CKIZbNYgFQvRXq3bfPUEna6p5tAUp47vTw2LBMkkhwX36AIrqlOiXgUlnLCozS0lY500BFZPgbHh");
+    const button = document.querySelector("#subscribe");
+
+    button.onclick = () => {
+        const amountInput = document.querySelector("#amount");
+        const amount = parseFloat(amountInput.value);
+        const name = document.querySelector("#name");
+        const address = document.querySelector("#address");
+        const zip = document.querySelector("#zip");
+        const city = document.querySelector("#city");
+        const email = document.querySelector("#email");
+        const phone = document.querySelector("#phone");
+        const value = {
+            amount: Math.floor(amount * 100),
+            name: name.value,
+            address: address.value,
+            zipCode: zip.value,
+            city: city.value,
+            email: email.value,
+            phone: phone.value,
+        };
+        console.log(value);
+        fetch("http://localhost:3000/donation", {
+            method: 'POST',
+            body: JSON.stringify(value)
+        }).then(
+            async response => {
+                const res = await response.json();
+                console.log(res);
+                const id = res.id;
+                console.log(id);
+                stripe.redirectToCheckout({sessionId: id});
+            }
+        );
+    };
+</script>
+</body>
+
+</html>
